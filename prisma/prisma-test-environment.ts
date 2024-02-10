@@ -1,7 +1,6 @@
 import type { Config } from '@jest/types';
 import dotenv from 'dotenv';
 import NodeEnvironment from 'jest-environment-node';
-import mysql from 'mysql2/promise';
 import { exec } from 'node:child_process';
 import crypto from 'node:crypto';
 import util from 'node:util';
@@ -22,7 +21,7 @@ export default class PrismaTestEnvironment extends NodeEnvironment {
     super(config);
 
     this.schema = `test_${crypto.randomUUID()}`;
-    this.connectionString = `mysql://${USER}:${PASSWORD}@${HOST}:${PORT}/${this.schema}`;
+    this.connectionString = `postgres://${USER}:${PASSWORD}@${HOST}:${PORT}/${this.schema}`;
   }
 
   async setup() {
@@ -35,12 +34,11 @@ export default class PrismaTestEnvironment extends NodeEnvironment {
   }
 
   async teardown() {
-    const client = await mysql.createConnection(this.connectionString);
-
-    await client.connect();
-    await client.query(
-      `DROP DATABASE IF EXISTS \`${client.config.database}\`;`,
-    );
-    await client.end();
+    // const client = await pg.createConnection(this.connectionString);
+    // await client.connect();
+    // await client.query(
+    //   `DROP DATABASE IF EXISTS \`${client.config.database}\`;`,
+    // );
+    // await client.end();
   }
 }
