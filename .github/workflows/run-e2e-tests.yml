@@ -45,5 +45,5 @@ jobs:
           DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
           DATABASE_USER: docker
           DATABASE_PASS: docker
-          JWT_PUBLIC_KEY: ${{secrets.JWT_DUMMY_PUBLIC}}
-          JWT_SECRET_KEY: ${{secrets.JWT_DUMMY_PRIVATE}}
+          JWT_PUBLIC_KEY: ${{secrets.JWT_NPS_PUBLIC}}
+          JWT_SECRET_KEY: ${{secrets.JWT_NPS_PRIVATE}}
