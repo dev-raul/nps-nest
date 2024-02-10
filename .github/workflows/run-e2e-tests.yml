@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
+      postgres:
         image: postgres
         env:
           POSTGRES_DATABASE: app
@@ -42,8 +42,8 @@ jobs:
         run: yarn test:e2e
         env:
           DATABASE_HOST: localhost
-          DATABASE_PORT: ${{ job.services.mysql.ports[3306] }}
-          DATABASE_USER: root
-          DATABASE_PASS: toor
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+          DATABASE_USER: docker
+          DATABASE_PASS: docker
           JWT_PUBLIC_KEY: ${{secrets.JWT_DUMMY_PUBLIC}}
           JWT_SECRET_KEY: ${{secrets.JWT_DUMMY_PRIVATE}}
