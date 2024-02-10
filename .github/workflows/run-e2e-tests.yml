@@ -8,49 +8,21 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: bitnami/mysql
+      postgres:
+        image: postgres
         env:
-          MYSQL_DATABASE: app
-          MYSQL_USER: docker
-          MYSQL_PASSWORD: docker
-          MYSQL_ROOT_PASSWORD: toor
+          POSTGRES_DATABASE: app
+          POSTGRES_USER: docker
+          POSTGRES_PASSWORD: docker
+          POSTGRES_ROOT_PASSWORD: toor
         ports:
-          - 3306:3306
-        volumes:
-          - mysql:/var/lib/mysql
+          - 5432:5432
+        # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
-      zookeeper:
-        image: bitnami/zookeeper:3
-        ports:
-          - 2181:2181
-        env:
-          ALLOW_ANONYMOUS_LOGIN: yes
-        options: >-
-          --health-cmd "nc -z localhost 2181 || exit -1"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 10
-      kafka:
-        image: bitnami/kafka:2
-        ports:
-          - 9092:9092
-        env:
-          KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          ALLOW_PLAINTEXT_LISTENER: yes
-          KAFKA_ADVERTISED_HOST_NAME: localhost
-        options: >-
-          --health-cmd "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list"
-          --health-interval 10s
-          --health-timeout 10s
-          --health-retries 50
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -70,8 +42,8 @@ jobs:
         run: yarn test:e2e
         env:
           DATABASE_HOST: localhost
-          DATABASE_PORT: ${{ job.services.mysql.ports[3306] }}
-          DATABASE_USER: root
-          DATABASE_PASS: toor
-          JWT_PUBLIC_KEY: ${{secrets.JWT_DUMMY_PUBLIC}}
-          JWT_SECRET_KEY: ${{secrets.JWT_DUMMY_PRIVATE}}
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+          DATABASE_USER: docker
+          DATABASE_PASS: docker
+          JWT_PUBLIC_KEY: ${{secrets.JWT_NPS_PUBLIC}}
+          JWT_SECRET_KEY: ${{secrets.JWT_NPS_PRIVATE}}
